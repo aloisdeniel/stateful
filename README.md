@@ -86,3 +86,15 @@ return Paged(
     ),
 );
 ```
+
+### TextEdited (*~ TextEditingController*)
+
+```dart
+return TextEdited(
+    text: 'hello',
+    builder: (context, textEditingController) => TextField(
+        controller: textEditingController,
+        /// ...
+    ),
+);
+```
