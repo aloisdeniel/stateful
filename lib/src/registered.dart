@@ -119,7 +119,7 @@ class _RegisteredState extends State<Registered> {
   void dispose() {
     for (var entry in registry._entries) {
       final value = values.values[entry.key];
-      value.dispose();
+      value.dispose?.call();
     }
     super.dispose();
   }
