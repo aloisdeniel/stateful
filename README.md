@@ -133,3 +133,10 @@ return Registered(
     ),
 );
 ```
+
+## Q & A
+
+> How does it compare to Provider ?
+
+The `provider` package offers a way to initialize and dispose instances but it also offers a way to access it from sub-children. Though only one instance of a given type can be provided. This `stateful` package has a different purpose since declared instances are only accessible from the builder methods : it is lightweight, and targeted for local instances.
+
