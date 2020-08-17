@@ -98,3 +98,38 @@ return TextEdited(
     ),
 );
 ```
+
+### Registered (*~ Multiple initializations*)
+
+```dart
+final registry = Registry();
+final animated = registry.animated(
+    duration: const Duration(milliseconds: 200)
+);
+final textEdited = registry.textEdited(
+    text: 'hello',
+);
+final state = registry.initialized(
+    initialize: (context) => State(),
+    dispose: (context, state) => state.dispose(),
+);
+
+return Registered(
+    registry: registry,
+    builder: (context, values) => Column(
+        children: [
+            MyView(
+                controller: animated(values),
+            ),
+            AnimatedBuilder(
+                animation: state,
+                builder: (context) => Text(state(values).value),
+            ),
+            TextField(
+                controller: textEdited(values),
+                /// ...
+            ),
+        ],
+    ),
+);
+```
