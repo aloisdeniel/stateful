@@ -2,24 +2,21 @@ import 'package:flutter/widgets.dart';
 
 import 'initialized.dart';
 
-typedef TickedInitializer<T> = T Function(
+typedef TickedInitializer<T> = Disposed<T> Function(
   BuildContext context,
   TickerProvider vsync,
 );
 
-/// A simple wrapper around [StatefulWidget] with a state that implements [TickerProviderStateMixin].
-/// It [initialize] sa single item from [initState] and [dispose] it.
+/// A simple wrapper around [StatefulWidget]s that [initialize] a single item from
+/// [initState] and [dispose] it.
 class Ticked<T> extends StatefulWidget {
-  final InitializedWidgetBuilder<T> builder;
   final TickedInitializer<T> initialize;
-  final InitializedDisposer<T> dispose;
+  final InitializedWidgetBuilder<T> builder;
   const Ticked({
     Key key,
-    @required this.initialize,
-    this.dispose,
+    this.initialize,
     @required this.builder,
   })  : assert(builder != null),
-        assert(initialize != null),
         super(key: key);
 
   @override
@@ -27,7 +24,7 @@ class Ticked<T> extends StatefulWidget {
 }
 
 class _TickedState<T> extends State<Ticked<T>> with TickerProviderStateMixin {
-  T value;
+  Disposed<T> value;
 
   @override
   void initState() {
@@ -39,12 +36,12 @@ class _TickedState<T> extends State<Ticked<T>> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    widget.dispose?.call(context, value);
+    value?.dispose?.call();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, value);
+    return widget.builder(context, value.value);
   }
 }

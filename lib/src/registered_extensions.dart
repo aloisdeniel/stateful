@@ -12,17 +12,22 @@ extension RegistryExtensions on Registry {
     double value,
   }) {
     return this.ticked(
-      initialize: (context, vsync) => AnimationController(
-        duration: duration,
-        animationBehavior: animationBehavior ?? AnimationBehavior.normal,
-        debugLabel: debugLabel,
-        lowerBound: lowerBound ?? 0.0,
-        upperBound: upperBound ?? 1.0,
-        reverseDuration: reverseDuration,
-        value: value,
-        vsync: vsync,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      (context, vsync) {
+        final result = AnimationController(
+          duration: duration,
+          animationBehavior: animationBehavior ?? AnimationBehavior.normal,
+          debugLabel: debugLabel,
+          lowerBound: lowerBound ?? 0.0,
+          upperBound: upperBound ?? 1.0,
+          reverseDuration: reverseDuration,
+          value: value,
+          vsync: vsync,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
     );
   }
 
@@ -30,8 +35,13 @@ extension RegistryExtensions on Registry {
     String text,
   }) {
     return this.initialized(
-      initialize: (context) => TextEditingController(text: text),
-      dispose: (context, controller) => controller.dispose(),
+      (context) {
+        final result = TextEditingController(text: text);
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
     );
   }
 
@@ -41,12 +51,17 @@ extension RegistryExtensions on Registry {
     double viewportFraction,
   }) {
     return this.initialized(
-      initialize: (context) => PageController(
-        initialPage: initialPage ?? 0,
-        keepPage: keepPage ?? true,
-        viewportFraction: viewportFraction ?? 1.0,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      (context) {
+        final result = PageController(
+          initialPage: initialPage ?? 0,
+          keepPage: keepPage ?? true,
+          viewportFraction: viewportFraction ?? 1.0,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
     );
   }
 
@@ -54,14 +69,17 @@ extension RegistryExtensions on Registry {
     @required int length,
     int initialIndex,
   }) {
-    return this.ticked(
-      initialize: (context, vsync) => TabController(
+    return this.ticked((context, vsync) {
+      final result = TabController(
         initialIndex: initialIndex ?? 0,
         length: length,
         vsync: vsync,
-      ),
-      dispose: (context, controller) => controller.dispose(),
-    );
+      );
+      return Disposed(
+        value: result,
+        dispose: () => result.dispose(),
+      );
+    });
   }
 
   RegistryEntry<ScrollController> scrolled<T>({
@@ -69,13 +87,16 @@ extension RegistryExtensions on Registry {
     bool keepScrollOffset,
     String debugLabel,
   }) {
-    return this.initialized(
-      initialize: (context) => ScrollController(
+    return this.initialized((context) {
+      final result = ScrollController(
         initialScrollOffset: initialScrollOffset ?? 0.0,
         keepScrollOffset: keepScrollOffset ?? true,
         debugLabel: debugLabel,
-      ),
-      dispose: (context, controller) => controller.dispose(),
-    );
+      );
+      return Disposed(
+        value: result,
+        dispose: () => result.dispose(),
+      );
+    });
   }
 }

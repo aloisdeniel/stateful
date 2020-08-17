@@ -6,28 +6,24 @@ import 'initialized.dart';
 class Registry {
   final List<RegistryEntry> _entries = [];
 
-  RegistryEntry<T> initialized<T>({
+  RegistryEntry<T> initialized<T>(
     InitializedInitializer<T> initialize,
-    InitializedDisposer<T> dispose,
-  }) {
+  ) {
     assert(initialize != null);
     final initializer = RegistryInitialized<T>(
       initialize: initialize,
-      dispose: dispose,
       key: _entries.length + 1,
     );
     _entries.add(initializer);
     return initializer;
   }
 
-  RegistryEntry<T> ticked<T>({
+  RegistryEntry<T> ticked<T>(
     TickedInitializer<T> initialize,
-    InitializedDisposer<T> dispose,
-  }) {
+  ) {
     assert(initialize != null);
     final initializer = RegistryTicked<T>(
       initialize: initialize,
-      dispose: dispose,
       key: _entries.length + 1,
     );
     _entries.add(initializer);
@@ -39,16 +35,14 @@ abstract class RegistryEntry<T> {
   final int key;
   Type get type => T;
   const RegistryEntry(this.key);
-  T call(RegistryValues values) => values.values[key];
+  T call(RegistryValues values) => values.values[key].value;
 }
 
 class RegistryInitialized<T> extends RegistryEntry<T> {
   final InitializedInitializer<T> initialize;
-  final InitializedDisposer<T> dispose;
   const RegistryInitialized({
     int key,
     @required this.initialize,
-    this.dispose,
   })  : assert(initialize != null),
         assert(key != null),
         super(key);
@@ -56,11 +50,9 @@ class RegistryInitialized<T> extends RegistryEntry<T> {
 
 class RegistryTicked<T> extends RegistryEntry<T> {
   final TickedInitializer<T> initialize;
-  final InitializedDisposer<T> dispose;
   const RegistryTicked({
     int key,
     @required this.initialize,
-    this.dispose,
   })  : assert(initialize != null),
         assert(key != null),
         super(key);
@@ -68,7 +60,7 @@ class RegistryTicked<T> extends RegistryEntry<T> {
 
 class RegistryValues {
   final Registry registry;
-  final Map<int, dynamic> values;
+  final Map<int, Disposed> values;
 
   RegistryValues({
     @required this.values,
@@ -103,8 +95,8 @@ class _RegisteredState extends State<Registered> {
   Registry registry;
   RegistryValues values;
 
-  Map<int, dynamic> initializeValues() {
-    final values = <int, dynamic>{};
+  Map<int, Disposed> initializeValues() {
+    final values = <int, Disposed>{};
     for (var entry in registry._entries) {
       if (entry is RegistryInitialized) {
         values[entry.key] = entry.initialize(context);
@@ -126,12 +118,8 @@ class _RegisteredState extends State<Registered> {
   @override
   void dispose() {
     for (var entry in registry._entries) {
-      final value = entry(values);
-      if (entry is RegistryInitialized && entry.dispose != null) {
-        entry.dispose(context, value);
-      } else if (entry is RegistryTicked && entry.dispose != null) {
-        entry.dispose(context, value);
-      }
+      final value = values.values[entry.key];
+      value.dispose();
     }
     super.dispose();
   }
@@ -168,7 +156,7 @@ class _RegisteredState extends State<Registered> {
 class _RegisteredTickedState extends _RegisteredState
     with TickerProviderStateMixin {
   @override
-  Map<int, dynamic> initializeValues() {
+  Map<int, Disposed> initializeValues() {
     final values = super.initializeValues();
 
     for (var entry in registry._entries) {

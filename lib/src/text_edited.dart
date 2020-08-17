@@ -16,8 +16,13 @@ class TextEdited extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Initialized<TextEditingController>(
-      initialize: (context) => TextEditingController(text: text),
-      dispose: (context, controller) => controller.dispose(),
+      initialize: (context) {
+        final result = TextEditingController(text: text);
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
       builder: builder,
     );
   }

@@ -29,17 +29,22 @@ class Animated extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Ticked<AnimationController>(
-      initialize: (context, vsync) => AnimationController(
-        duration: duration,
-        animationBehavior: animationBehavior ?? AnimationBehavior.normal,
-        debugLabel: debugLabel,
-        lowerBound: lowerBound ?? 0.0,
-        upperBound: upperBound ?? 1.0,
-        reverseDuration: reverseDuration,
-        value: value,
-        vsync: vsync,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      initialize: (context, vsync) {
+        final result = AnimationController(
+          duration: duration,
+          animationBehavior: animationBehavior ?? AnimationBehavior.normal,
+          debugLabel: debugLabel,
+          lowerBound: lowerBound ?? 0.0,
+          upperBound: upperBound ?? 1.0,
+          reverseDuration: reverseDuration,
+          value: value,
+          vsync: vsync,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
       builder: builder,
     );
   }

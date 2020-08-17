@@ -21,12 +21,17 @@ class Paged extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Initialized<PageController>(
-      initialize: (context) => PageController(
-        initialPage: initialPage ?? 0,
-        keepPage: keepPage ?? true,
-        viewportFraction: viewportFraction ?? 1.0,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      initialize: (context) {
+        final result = PageController(
+          initialPage: initialPage ?? 0,
+          keepPage: keepPage ?? true,
+          viewportFraction: viewportFraction ?? 1.0,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
       builder: builder,
     );
   }

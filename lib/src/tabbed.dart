@@ -20,12 +20,17 @@ class Tabbed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Ticked<TabController>(
-      initialize: (context, vsync) => TabController(
-        initialIndex: initialIndex ?? 0,
-        length: length,
-        vsync: vsync,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      initialize: (context, vsync) {
+        final result = TabController(
+          initialIndex: initialIndex ?? 0,
+          length: length,
+          vsync: vsync,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
       builder: builder,
     );
   }

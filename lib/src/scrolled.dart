@@ -20,12 +20,17 @@ class Scrolled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Initialized<ScrollController>(
-      initialize: (context) => ScrollController(
-        initialScrollOffset: initialScrollOffset ?? 0.0,
-        keepScrollOffset: keepScrollOffset ?? true,
-        debugLabel: debugLabel,
-      ),
-      dispose: (context, controller) => controller.dispose(),
+      initialize: (context) {
+        final result = ScrollController(
+          initialScrollOffset: initialScrollOffset ?? 0.0,
+          keepScrollOffset: keepScrollOffset ?? true,
+          debugLabel: debugLabel,
+        );
+        return Disposed(
+          value: result,
+          dispose: () => result.dispose(),
+        );
+      },
       builder: builder,
     );
   }

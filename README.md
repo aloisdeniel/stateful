@@ -8,8 +8,13 @@ A set of common stateful widget implementations.
 
 ```dart
 return Initialized<State>(
-    initialize: (context) => State(),
-    dispose: (context, state) => state.dispose(),
+    initialize: (context) {
+        final state = State(),
+        return Disposed(
+            value: state, 
+            dispose: () => state.dispose(),
+        );
+    },
     builder: (context, state) => AnimatedBuilder(
         animation: state,
         builder: (context) => Text(state.value),
@@ -21,8 +26,13 @@ return Initialized<State>(
 
 ```dart
 return Ticked<MyController>(
-    initialize: (context, vsync) => MyController(vsync: vsync),
-    dispose: (context, controller) => state.dispose(),
+    initialize: (context) {
+        final state = MyController(vsync: vsync),
+        return Disposed(
+            value: state, 
+            dispose: () => state.dispose(),
+        );
+    },
     builder: (context, controller) => MyView(
             controller: controller,
         ),
@@ -110,8 +120,13 @@ final textEdited = registry.textEdited(
     text: 'hello',
 );
 final state = registry.initialized(
-    initialize: (context) => State(),
-    dispose: (context, state) => state.dispose(),
+    (context) {
+        final state = State(),
+        return Disposed(
+            value: state, 
+            dispose: () => state.dispose(),
+        );
+    }
 );
 
 return Registered(
