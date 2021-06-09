@@ -6,15 +6,15 @@ import 'initialized.dart';
 /// An helper widget that instanciate an [PageController] and dispose it.
 class Paged extends StatelessWidget {
   final InitializedWidgetBuilder<PageController> builder;
-  final int initialPage;
-  final double viewportFraction;
-  final bool keepPage;
+  final int? initialPage;
+  final double? viewportFraction;
+  final bool? keepPage;
   const Paged({
-    Key key,
+    Key? key,
     this.initialPage,
     this.keepPage,
     this.viewportFraction,
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 
