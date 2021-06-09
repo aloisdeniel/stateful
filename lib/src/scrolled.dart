@@ -4,16 +4,16 @@ import 'initialized.dart';
 
 /// An helper widget that instanciate an [ScrollController] and dispose it.
 class Scrolled extends StatelessWidget {
-  final double initialScrollOffset;
-  final bool keepScrollOffset;
-  final String debugLabel;
+  final double? initialScrollOffset;
+  final bool? keepScrollOffset;
+  final String? debugLabel;
   final InitializedWidgetBuilder<ScrollController> builder;
   const Scrolled({
-    Key key,
+    Key? key,
     this.initialScrollOffset,
     this.keepScrollOffset,
     this.debugLabel,
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 

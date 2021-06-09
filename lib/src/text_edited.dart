@@ -7,9 +7,9 @@ class TextEdited extends StatelessWidget {
   final String text;
   final InitializedWidgetBuilder<TextEditingController> builder;
   const TextEdited({
-    Key key,
+    Key? key,
     this.text = '',
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 

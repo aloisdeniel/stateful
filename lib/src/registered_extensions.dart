@@ -3,13 +3,13 @@ import 'package:stateful/stateful.dart';
 
 extension RegistryExtensions on Registry {
   RegistryEntry<AnimationController> animated<T>({
-    Duration duration,
-    Duration reverseDuration,
-    AnimationBehavior animationBehavior,
-    String debugLabel,
-    double lowerBound,
-    double upperBound,
-    double value,
+    Duration? duration,
+    Duration? reverseDuration,
+    AnimationBehavior? animationBehavior,
+    String? debugLabel,
+    double? lowerBound,
+    double? upperBound,
+    double? value,
   }) {
     return this.ticked(
       (context, vsync) {
@@ -32,7 +32,7 @@ extension RegistryExtensions on Registry {
   }
 
   RegistryEntry<TextEditingController> textEdited<T>({
-    String text,
+    String? text,
   }) {
     return this.initialized(
       (context) {
@@ -46,9 +46,9 @@ extension RegistryExtensions on Registry {
   }
 
   RegistryEntry<PageController> paged<T>({
-    int initialPage,
-    bool keepPage,
-    double viewportFraction,
+    int? initialPage,
+    bool? keepPage,
+    double? viewportFraction,
   }) {
     return this.initialized(
       (context) {
@@ -66,8 +66,8 @@ extension RegistryExtensions on Registry {
   }
 
   RegistryEntry<TabController> tabbed<T>({
-    @required int length,
-    int initialIndex,
+    required int length,
+    int? initialIndex,
   }) {
     return this.ticked((context, vsync) {
       final result = TabController(
@@ -83,9 +83,9 @@ extension RegistryExtensions on Registry {
   }
 
   RegistryEntry<ScrollController> scrolled<T>({
-    double initialScrollOffset,
-    bool keepScrollOffset,
-    String debugLabel,
+    double? initialScrollOffset,
+    bool? keepScrollOffset,
+    String? debugLabel,
   }) {
     return this.initialized((context) {
       final result = ScrollController(

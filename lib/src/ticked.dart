@@ -10,12 +10,12 @@ typedef TickedInitializer<T> = Disposed<T> Function(
 /// A simple wrapper around [StatefulWidget]s that [initialize] a single item from
 /// [initState] and [dispose] it.
 class Ticked<T> extends StatefulWidget {
-  final TickedInitializer<T> initialize;
+  final TickedInitializer<T>? initialize;
   final InitializedWidgetBuilder<T> builder;
   const Ticked({
-    Key key,
+    Key? key,
     this.initialize,
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 
@@ -24,12 +24,12 @@ class Ticked<T> extends StatefulWidget {
 }
 
 class _TickedState<T> extends State<Ticked<T>> with TickerProviderStateMixin {
-  Disposed<T> value;
+  Disposed<T>? value;
 
   @override
   void initState() {
     if (widget.initialize != null) {
-      value = widget.initialize(context, this);
+      value = widget.initialize!(context, this);
     }
     super.initState();
   }
@@ -42,6 +42,6 @@ class _TickedState<T> extends State<Ticked<T>> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, value.value);
+    return widget.builder(context, value!.value);
   }
 }

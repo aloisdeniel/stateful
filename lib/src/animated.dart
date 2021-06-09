@@ -5,16 +5,16 @@ import 'initialized.dart';
 
 /// An helper widget that instanciate an [AnimationController] and dispose it.
 class Animated extends StatelessWidget {
-  final Duration duration;
-  final Duration reverseDuration;
-  final String debugLabel;
-  final double lowerBound;
-  final double upperBound;
-  final double value;
-  final AnimationBehavior animationBehavior;
+  final Duration? duration;
+  final Duration? reverseDuration;
+  final String? debugLabel;
+  final double? lowerBound;
+  final double? upperBound;
+  final double? value;
+  final AnimationBehavior? animationBehavior;
   final InitializedWidgetBuilder<AnimationController> builder;
   const Animated({
-    Key key,
+    Key? key,
     this.value,
     this.duration,
     this.reverseDuration,
@@ -22,7 +22,7 @@ class Animated extends StatelessWidget {
     this.lowerBound,
     this.upperBound,
     this.animationBehavior,
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 

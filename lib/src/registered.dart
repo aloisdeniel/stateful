@@ -35,14 +35,14 @@ abstract class RegistryEntry<T> {
   final int key;
   Type get type => T;
   const RegistryEntry(this.key);
-  T call(RegistryValues values) => values.values[key].value;
+  T call(RegistryValues values) => values.values[key]!.value;
 }
 
 class RegistryInitialized<T> extends RegistryEntry<T> {
   final InitializedInitializer<T> initialize;
   const RegistryInitialized({
-    int key,
-    @required this.initialize,
+    required int key,
+    required this.initialize,
   })  : assert(initialize != null),
         assert(key != null),
         super(key);
@@ -51,35 +51,35 @@ class RegistryInitialized<T> extends RegistryEntry<T> {
 class RegistryTicked<T> extends RegistryEntry<T> {
   final TickedInitializer<T> initialize;
   const RegistryTicked({
-    int key,
-    @required this.initialize,
+    required int key,
+    required this.initialize,
   })  : assert(initialize != null),
         assert(key != null),
         super(key);
 }
 
 class RegistryValues {
-  final Registry registry;
+  final Registry? registry;
   final Map<int, Disposed> values;
 
   RegistryValues({
-    @required this.values,
-    @required Registry registry,
+    required this.values,
+    required Registry? registry,
   }) : this.registry = registry;
 }
 
 typedef Widget WidgetRegistryBuilder(
   BuildContext context,
-  RegistryValues values,
+  RegistryValues? values,
 );
 
 class Registered extends StatefulWidget {
   final Registry registry;
   final WidgetRegistryBuilder builder;
   const Registered({
-    Key key,
-    @required this.builder,
-    @required this.registry,
+    Key? key,
+    required this.builder,
+    required this.registry,
   })  : assert(builder != null),
         assert(registry != null),
         super(key: key);
@@ -92,12 +92,12 @@ class Registered extends StatefulWidget {
 }
 
 class _RegisteredState extends State<Registered> {
-  Registry registry;
-  RegistryValues values;
+  Registry? registry;
+  RegistryValues? values;
 
   Map<int, Disposed> initializeValues() {
     final values = <int, Disposed>{};
-    for (var entry in registry._entries) {
+    for (var entry in registry!._entries) {
       if (entry is RegistryInitialized) {
         values[entry.key] = entry.initialize(context);
       }
@@ -117,8 +117,8 @@ class _RegisteredState extends State<Registered> {
 
   @override
   void dispose() {
-    for (var entry in registry._entries) {
-      final value = values.values[entry.key];
+    for (var entry in registry!._entries) {
+      final value = values!.values[entry.key]!;
       value.dispose?.call();
     }
     super.dispose();
@@ -126,14 +126,14 @@ class _RegisteredState extends State<Registered> {
 
   @override
   void didUpdateWidget(Registered oldWidget) {
-    if (widget.registry._entries.length != registry._entries.length) {
+    if (widget.registry._entries.length != registry!._entries.length) {
       throw Exception(
           'The registry should has the same entries from one build to another');
     }
 
     for (var i = 0; i < oldWidget.registry._entries.length; i++) {
       final newEntry = widget.registry._entries[i];
-      final oldEntry = registry._entries[i];
+      final oldEntry = registry!._entries[i];
       if (newEntry.runtimeType != oldEntry.runtimeType) {
         throw Exception(
             'The registry should has the same entries from one build to another. The entry ${oldEntry.key} was a ${oldEntry.runtimeType}, and is now a ${newEntry.runtimeType}.');
@@ -159,7 +159,7 @@ class _RegisteredTickedState extends _RegisteredState
   Map<int, Disposed> initializeValues() {
     final values = super.initializeValues();
 
-    for (var entry in registry._entries) {
+    for (var entry in registry!._entries) {
       if (entry is RegistryTicked) {
         values[entry.key] = entry.initialize(context, this);
       }

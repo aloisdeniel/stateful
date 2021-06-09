@@ -13,9 +13,9 @@ typedef InitializedWidgetBuilder<T> = Widget Function(
 
 class Disposed<T> {
   final T value;
-  final InitializedDisposer<T> dispose;
+  final InitializedDisposer<T>? dispose;
   const Disposed({
-    @required this.value,
+    required this.value,
     this.dispose,
   });
 }
@@ -23,12 +23,12 @@ class Disposed<T> {
 /// A simple wrapper around [StatefulWidget]s that [initialize] a single item from
 /// [initState] and [dispose] it.
 class Initialized<T> extends StatefulWidget {
-  final InitializedInitializer<T> initialize;
+  final InitializedInitializer<T>? initialize;
   final InitializedWidgetBuilder<T> builder;
   const Initialized({
-    Key key,
+    Key? key,
     this.initialize,
-    @required this.builder,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 
@@ -37,12 +37,12 @@ class Initialized<T> extends StatefulWidget {
 }
 
 class _InitializedState<T> extends State<Initialized<T>> {
-  Disposed<T> value;
+  Disposed<T>? value;
 
   @override
   void initState() {
     if (widget.initialize != null) {
-      value = widget.initialize(context);
+      value = widget.initialize!(context);
     }
     super.initState();
   }
@@ -55,6 +55,6 @@ class _InitializedState<T> extends State<Initialized<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(context, value.value);
+    return widget.builder(context, value!.value);
   }
 }

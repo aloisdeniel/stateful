@@ -7,13 +7,13 @@ import 'ticked.dart';
 /// An helper widget that instanciate an [TabController] and dispose it.
 class Tabbed extends StatelessWidget {
   final InitializedWidgetBuilder<TabController> builder;
-  final int initialIndex;
+  final int? initialIndex;
   final int length;
   const Tabbed({
-    Key key,
+    Key? key,
     this.initialIndex,
-    @required this.length,
-    @required this.builder,
+    required this.length,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 
