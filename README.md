@@ -4,13 +4,27 @@ A set of common stateful widget implementations.
 
 ## Usage
 
-### Initialized
+### Initializer
 
 ```dart
-return Initialized<State>(
+return Initializer(
+    afterFirstFrame: true, 
+    initialize: (context) {
+       // Launch an initial request
+    },
+    child: Container(
+        // ...
+    ),
+);
+```
+
+### Disposed
+
+```dart
+return Disposed<State>(
     initialize: (context) {
         final state = State(),
-        return Disposed(
+        return DisposedValue(
             value: state, 
             dispose: () => state.dispose(),
         );

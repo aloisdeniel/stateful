@@ -1,15 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:stateful/stateful.dart';
 
-import 'initialized.dart';
+import 'disposed.dart';
 
 class Registry {
   final List<RegistryEntry> _entries = [];
 
   RegistryEntry<T> initialized<T>(
-    InitializedInitializer<T> initialize,
+    DisposedInitializer<T> initialize,
   ) {
-    assert(initialize != null);
     final initializer = RegistryInitialized<T>(
       initialize: initialize,
       key: _entries.length + 1,
@@ -21,7 +20,6 @@ class Registry {
   RegistryEntry<T> ticked<T>(
     TickedInitializer<T> initialize,
   ) {
-    assert(initialize != null);
     final initializer = RegistryTicked<T>(
       initialize: initialize,
       key: _entries.length + 1,
@@ -35,36 +33,32 @@ abstract class RegistryEntry<T> {
   final int key;
   Type get type => T;
   const RegistryEntry(this.key);
-  T call(RegistryValues values) => values.values[key].value;
+  T call(RegistryValues values) => values.values[key]!.value;
 }
 
 class RegistryInitialized<T> extends RegistryEntry<T> {
-  final InitializedInitializer<T> initialize;
+  final DisposedInitializer<T> initialize;
   const RegistryInitialized({
-    int key,
-    @required this.initialize,
-  })  : assert(initialize != null),
-        assert(key != null),
-        super(key);
+    required int key,
+    required this.initialize,
+  }) : super(key);
 }
 
 class RegistryTicked<T> extends RegistryEntry<T> {
   final TickedInitializer<T> initialize;
   const RegistryTicked({
-    int key,
-    @required this.initialize,
-  })  : assert(initialize != null),
-        assert(key != null),
-        super(key);
+    required int key,
+    required this.initialize,
+  }) : super(key);
 }
 
 class RegistryValues {
   final Registry registry;
-  final Map<int, Disposed> values;
+  final Map<int, DisposedValue> values;
 
   RegistryValues({
-    @required this.values,
-    @required Registry registry,
+    required this.values,
+    required Registry registry,
   }) : this.registry = registry;
 }
 
@@ -77,12 +71,10 @@ class Registered extends StatefulWidget {
   final Registry registry;
   final WidgetRegistryBuilder builder;
   const Registered({
-    Key key,
-    @required this.builder,
-    @required this.registry,
-  })  : assert(builder != null),
-        assert(registry != null),
-        super(key: key);
+    Key? key,
+    required this.builder,
+    required this.registry,
+  }) : super(key: key);
 
   @override
   _RegisteredState createState() =>
@@ -92,11 +84,11 @@ class Registered extends StatefulWidget {
 }
 
 class _RegisteredState extends State<Registered> {
-  Registry registry;
-  RegistryValues values;
+  late Registry registry;
+  late RegistryValues values;
 
-  Map<int, Disposed> initializeValues() {
-    final values = <int, Disposed>{};
+  Map<int, DisposedValue> initializeValues() {
+    final values = <int, DisposedValue>{};
     for (var entry in registry._entries) {
       if (entry is RegistryInitialized) {
         values[entry.key] = entry.initialize(context);
@@ -119,7 +111,7 @@ class _RegisteredState extends State<Registered> {
   void dispose() {
     for (var entry in registry._entries) {
       final value = values.values[entry.key];
-      value.dispose?.call();
+      value?.dispose?.call();
     }
     super.dispose();
   }
@@ -156,7 +148,7 @@ class _RegisteredState extends State<Registered> {
 class _RegisteredTickedState extends _RegisteredState
     with TickerProviderStateMixin {
   @override
-  Map<int, Disposed> initializeValues() {
+  Map<int, DisposedValue> initializeValues() {
     final values = super.initializeValues();
 
     for (var entry in registry._entries) {
